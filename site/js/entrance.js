@@ -215,7 +215,14 @@
       shuffled(FLASH_LASER_COUNT, 'laser')
     ).forEach(function (src) {
       var img = new Image();
-      img.onload = function () { flashLoaded[src] = true; };
+      img.onload = function () {
+        flashLoaded[src] = true;
+        // best-effort: warm the decode cache so #flash-img doesn't have
+        // to decode cold when it picks this src up. Not awaited — some
+        // browsers never settle this promise for detached images, and
+        // readiness must not depend on it.
+        if (img.decode) img.decode().catch(function () {});
+      };
       img.src = src;
       preloadedImgs.push(img);
     });
