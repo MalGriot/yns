@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>PLURP — Inner World</title>
+<meta name="description" content="You're in. The PLURP inner world — shop, music, DJs, culture, Angels, OMY'S Club." />
+<link rel="stylesheet" href="css/tokens.css" />
+<link rel="stylesheet" href="css/shimmer.css" />
+<link rel="stylesheet" href="css/world.css" />
+</head>
+<body class="world-body">
+
+<div class="world-veil" id="world-veil"></div>
+
+<header class="world-topbar">
+  <div class="world-identity">
+    <span class="world-genre-name" id="world-genre-name"></span>
+    <span class="world-sub-name" id="world-sub-name"></span>
+  </div>
+  <button class="leave-party" id="leave-party">Leave the Party</button>
+</header>
+
+<nav class="world-nav" id="world-nav" aria-label="World sections">
+  <button type="button" class="world-nav-trigger" id="world-nav-trigger" aria-label="Open section navigation"></button>
+  <div class="world-nav-links">
+    <a class="world-nav-link" data-target="shop" href="#shop"><span class="world-nav-dot"></span><span class="world-nav-label">Shop</span></a>
+    <a class="world-nav-link" data-target="djs" href="#djs"><span class="world-nav-dot"></span><span class="world-nav-label">DJs</span></a>
+    <a class="world-nav-link" data-target="culture" href="#culture"><span class="world-nav-dot"></span><span class="world-nav-label">Culture</span></a>
+    <a class="world-nav-link" data-target="angels" href="#angels"><span class="world-nav-dot"></span><span class="world-nav-label">Angels</span></a>
+    <a class="world-nav-link" data-target="omys" href="#omys"><span class="world-nav-dot"></span><span class="world-nav-label">OMY'S</span></a>
+  </div>
+</nav>
+
+<section class="world-hero">
+  <div class="world-hero-reel" id="world-hero-reel"></div>
+  <div class="world-hero-inner">
+    <span class="world-hero-eyebrow mono">You're in</span>
+    <h1 class="world-hero-title" id="world-hero-title"></h1>
+    <p class="world-hero-tag" id="world-hero-tag"></p>
+    <div class="needle-hint" id="needle-hint">click anywhere to drop the needle</div>
+  </div>
+</section>
+
+<section class="world-section" id="shop">
+  <div class="world-section-head reveal">
+    <div>
+      <span class="world-eyebrow">Shop This World</span>
+      <h2 class="world-heading">What we wearing<br />tonight?</h2>
+    </div>
+    <p class="world-section-desc">Not a catalogue. This is what belongs on this floor — discover it the way you'd discover it in the room.</p>
+  </div>
+  <div class="shop-grid" id="shop-grid"></div>
+</section>
+
+<section class="world-section" id="djs">
+  <div class="world-section-head reveal">
+    <div>
+      <span class="world-eyebrow">Tastemaker</span>
+      <h2 class="world-heading">Who's on?</h2>
+    </div>
+    <p class="world-section-desc">PLURP-vetted DJs building this world's sound — sets, mixes, and a platform for who's next.</p>
+  </div>
+  <div class="dj-row" id="dj-row"></div>
+</section>
+
+<section class="world-section" id="culture">
+  <div class="world-section-head reveal">
+    <div>
+      <span class="world-eyebrow">Cultural Layer</span>
+      <h2 class="world-heading">Know the scene.</h2>
+    </div>
+    <p class="world-section-desc">The history, the etiquette, the context — PLURP as curator, not classroom.</p>
+  </div>
+  <div class="culture-list" id="culture-list"></div>
+</section>
+
+<section class="world-section" id="angels">
+  <div class="world-section-head reveal">
+    <div>
+      <span class="world-eyebrow">Community</span>
+      <h2 class="world-heading">Angels</h2>
+    </div>
+    <p class="world-section-desc">A female-led community wearing, styling, traveling and connecting through PLURP. Real people, real nights.</p>
+  </div>
+  <div class="angels-grid" id="angels-grid"></div>
+  <a class="angels-cta" href="#">Join the Angels →</a>
+</section>
+
+<section class="world-section omys-section" id="omys">
+  <div class="omys-panel glow glow-gold reveal">
+    <div class="world-eyebrow mono">Members Only</div>
+    <h2 class="omys-title">OMY'S CLUB</h2>
+    <p class="omys-body">A door into something more exclusive. Private events, secret parties, early access, members-only sets — the inner circle of the inner world.</p>
+    <button class="omys-cta">Request Invitation</button>
+  </div>
+</section>
+
+<footer class="world-footer">PLURP · Peace · Love · Unity · Respect · Party</footer>
+
+<div class="miniplayer" id="miniplayer" tabindex="0">
+  <div class="miniplayer-face" id="mp-art">
+    <div class="miniplayer-eq"><span></span><span></span><span></span><span></span><span></span></div>
+  </div>
+  <div class="miniplayer-body">
+    <div class="miniplayer-marquee" id="mp-track-wrap">
+      <div class="miniplayer-marquee-track">
+        <span class="miniplayer-track" id="mp-track"></span>
+        <span class="miniplayer-track" id="mp-track-dup" aria-hidden="true"></span>
+      </div>
+    </div>
+    <div class="miniplayer-controls">
+      <button class="miniplayer-btn" id="mp-prev" aria-label="Previous">⏮</button>
+      <button class="miniplayer-btn active" id="mp-play" aria-label="Play/Pause">▶</button>
+      <button class="miniplayer-btn" id="mp-next" aria-label="Next">⏭</button>
+      <button class="miniplayer-btn" id="mp-loop" aria-label="Loop">∞</button>
+    </div>
+  </div>
+</div>
+<span class="miniplayer-toast" id="mp-toast"></span>
+
+<div id="yt-miniplayer" aria-hidden="true" style="position:fixed;bottom:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none;overflow:hidden;"></div>
+
+<script src="js/club-data.js"></script>
+<script src="js/motion.js"></script>
+<script src="js/club-audio.js"></script>
+<script src="js/youtube-audio.js"></script>
+<script src="js/world.js"></script>
+</body>
+</html>

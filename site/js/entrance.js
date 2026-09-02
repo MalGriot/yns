@@ -112,6 +112,27 @@
   var passwordBtn = document.querySelector('.password-enter-btn');
   var smokeVideo = document.getElementById('smoke-video');
 
+  // ---------------------------------------------------------
+  // MUTE TOGGLE — appears once the post-password music kicks in
+  // ---------------------------------------------------------
+  var muteToggle = document.getElementById('mute-toggle');
+
+  function showMuteToggle() {
+    muteToggle.classList.add('is-visible');
+  }
+
+  var muted = false;
+  var OUTSIDE_VOLUME = 0.55; // matches startOutsideAtmosphere's fadeTo level
+
+  muteToggle.addEventListener('click', function () {
+    muted = !muted;
+    window.ClubAudio.duckMaster(muted ? 0 : OUTSIDE_VOLUME, 0.4);
+    muteToggle.classList.toggle('is-muted', muted);
+    muteToggle.textContent = muted ? 'unmute' : 'mute';
+    muteToggle.setAttribute('aria-pressed', String(muted));
+    muteToggle.setAttribute('aria-label', muted ? 'Unmute music' : 'Mute music');
+  });
+
   function runPassword() {
     if (skipped) return;
     showScene('password');
@@ -131,6 +152,7 @@
 
     window.ClubAudio.unlock();
     window.ClubAudio.startOutside();
+    showMuteToggle();
 
     [passwordPrompt, passwordInput, passwordHint, passwordBtn].forEach(suckIntoSmoke);
     passwordInput.disabled = true;
@@ -447,15 +469,20 @@
       });
 
       // Hover (mouse only — hover:none devices never fire this) expands
-      // the panel instantly. A click anywhere on an inactive panel also
-      // expands it, so a mouse user can just click straight through.
+      // the panel instantly. A click on an inactive panel expands it;
+      // a click on an already-expanded panel (the picture itself) enters
+      // it, same as the CTA button.
       panel.addEventListener('mouseenter', function () { expandAccordionPanel(panel); });
-      panel.addEventListener('click', function () {
-        if (!panel.classList.contains('is-active')) expandAccordionPanel(panel);
+      panel.addEventListener('click', function (e) {
+        if (!panel.classList.contains('is-active')) {
+          expandAccordionPanel(panel);
+        } else {
+          triggerGooeyNav(e, key);
+        }
       });
       // Touch: first tap expands the image (no hover to reveal it first);
-      // entering only happens via the explicit CTA button above, never
-      // from a second tap on the image itself.
+      // a second tap on the now-expanded picture enters it via the click
+      // handler above, same as the CTA button.
       panel.addEventListener('touchstart', function (e) {
         if (!panel.classList.contains('is-active')) {
           e.preventDefault();
