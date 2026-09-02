@@ -200,6 +200,34 @@
     return arr;
   }
 
+  // The flash sequence swaps images as fast as every ~40ms once it ramps
+  // up — nowhere near enough time to download an unfetched photo over a
+  // real network, so it's not enough to just kick the requests off early;
+  // the picker below also has to know which ones have actually landed and
+  // only ever choose from those, or it'll sit on a stale/broken src.
+  var flashLoaded = Object.create(null);
+  var preloadedImgs = []; // keeps the Image objects alive so loads can't be GC'd mid-flight
+
+  (function preloadFlashPool() {
+    [].concat(
+      shuffled(FLASH_REAL_COUNT, 'real'),
+      shuffled(FLASH_SCENE_COUNT, 'scene'),
+      shuffled(FLASH_LASER_COUNT, 'laser')
+    ).forEach(function (src) {
+      var img = new Image();
+      img.onload = function () {
+        flashLoaded[src] = true;
+        // best-effort: warm the decode cache so #flash-img doesn't have
+        // to decode cold when it picks this src up. Not awaited — some
+        // browsers never settle this promise for detached images, and
+        // readiness must not depend on it.
+        if (img.decode) img.decode().catch(function () {});
+      };
+      img.src = src;
+      preloadedImgs.push(img);
+    });
+  })();
+
   function weightedQueue(pairs) {
     // pairs: [[queue, weight], ...] — picks a non-empty queue by weight
     var pool = pairs.filter(function (p) { return p[0].length; });
@@ -213,17 +241,35 @@
     return pool[pool.length - 1][0];
   }
 
+  // Pulls the first already-loaded src out of queue, leaving any
+  // still-loading ones in place for a later frame to pick up.
+  function takeLoaded(queue) {
+    for (var i = 0; i < queue.length; i++) {
+      if (flashLoaded[queue[i]]) return queue.splice(i, 1)[0];
+    }
+    return null;
+  }
+
   function nextFlashSrc(progress) {
     // real photography stays in the mix throughout; the generated laser
     // shots take over more and more as the sequence heats up
     var laserWeight = Math.pow(progress, 1.6);
     var sceneWeight = 1 - laserWeight;
-    var queue = weightedQueue([
+    var pairs = [
       [realQueue, 0.5],
       [sceneQueue, sceneWeight],
       [laserQueue, laserWeight]
-    ]);
-    return queue ? queue.shift() : null;
+    ];
+    // try queues in weighted order, but fall through to the next one if
+    // the queue we land on hasn't got anything loaded yet
+    while (pairs.length) {
+      var queue = weightedQueue(pairs);
+      if (!queue) return null;
+      var src = takeLoaded(queue);
+      if (src) return src;
+      pairs = pairs.filter(function (p) { return p[0] !== queue; });
+    }
+    return null;
   }
 
   function startFlashSequence() {
@@ -259,13 +305,18 @@
       sceneQueue = shuffled(FLASH_SCENE_COUNT, 'scene');
       laserQueue = shuffled(FLASH_LASER_COUNT, 'laser');
     }
-    flashImg.src = nextFlashSrc(progress);
-    flashImg.classList.remove('flash-off');
-    flashImg.classList.add('flash-on');
-    setTimeout(function () {
-      flashImg.classList.remove('flash-on');
-      flashImg.classList.add('flash-off');
-    }, FLASH_ON_MS);
+    var src = nextFlashSrc(progress);
+    if (src) {
+      flashImg.src = src;
+      flashImg.classList.remove('flash-off');
+      flashImg.classList.add('flash-on');
+      setTimeout(function () {
+        flashImg.classList.remove('flash-on');
+        flashImg.classList.add('flash-off');
+      }, FLASH_ON_MS);
+    }
+    // if nothing's loaded yet, just skip this frame's flash rather than
+    // stall on or repeat whatever's already on screen
     scheduleNextFlash();
   }
 
