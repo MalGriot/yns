@@ -55,6 +55,27 @@ html, body.entrance-body {
 }
 .skip-ritual:hover { opacity: 1; }
 
+.mute-toggle {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  z-index: 50;
+  background: transparent;
+  border: 1px solid var(--ink-line);
+  color: var(--bone-dim);
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  padding: 0.5rem 0.9rem;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.mute-toggle.is-visible { opacity: 0.5; pointer-events: auto; }
+.mute-toggle:hover { opacity: 1; }
+.mute-toggle.is-muted { border-color: var(--bone-dim); color: var(--bone); }
+
 /* ---- OUTSIDE: PLURP values ---- */
 .values-word {
   --crash-scale-start: 1.75;
